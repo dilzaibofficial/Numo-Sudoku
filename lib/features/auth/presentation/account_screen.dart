@@ -23,7 +23,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     });
     try {
       final user = await ref.read(authControllerProvider).signInWithGoogle();
-      await ref.read(profileRepositoryProvider).ensureProfile(user);
+      await ref.read(profileRepositoryProvider).ensureProfile(user.toProfileInput());
     } catch (e) {
       setState(() => _error = 'Sign-in failed. Please try again.');
     } finally {

@@ -2,6 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../profile/data/profile_repository.dart';
+
+extension UserProfileInputMapper on User {
+  UserProfileInput toProfileInput() => UserProfileInput(
+        uid: uid,
+        isAnonymous: isAnonymous,
+        displayName: displayName,
+        photoUrl: photoURL,
+        email: email,
+      );
+}
+
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
 final authStateProvider = StreamProvider<User?>((ref) {

@@ -17,7 +17,7 @@ void main() async {
   // Guarantees a signed-in (at minimum anonymous) user before the UI ever
   // renders, so gameplay never has to wait on or gate behind auth.
   final user = await container.read(authControllerProvider).ensureSignedIn();
-  await container.read(profileRepositoryProvider).ensureProfile(user);
+  await container.read(profileRepositoryProvider).ensureProfile(user.toProfileInput());
 
   runApp(
     UncontrolledProviderScope(
