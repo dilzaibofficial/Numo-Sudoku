@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_theme.dart';
 import '../../../app/theme/theme_mode_controller.dart';
@@ -51,6 +52,12 @@ class HomeScreen extends ConsumerWidget {
                 _ColorSwatch('User', board.userNumber),
                 _ColorSwatch('Error', board.errorNumber),
               ],
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => context.push('/play'),
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Play 9x9'),
             ),
           ],
         ),

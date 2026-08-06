@@ -7,7 +7,10 @@ plugins {
 android {
     namespace = "com.numosudoku.numo_sudoku"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Pinned to an NDK version already installed on this machine — the
+    // Flutter-default version triggered a very slow first-time download.
+    // The app has no native/C++ code, so any recent NDK works fine.
+    ndkVersion = "27.1.12297006"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
