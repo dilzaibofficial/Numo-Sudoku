@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../profile/data/profile_repository.dart';
 import '../application/auth_controller.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
@@ -21,7 +22,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       _error = null;
     });
     try {
-      await ref.read(authControllerProvider).signInWithGoogle();
+      final user = await ref.read(authControllerProvider).signInWithGoogle();
+      await ref.read(profileRepositoryProvider).ensureProfile(user);
     } catch (e) {
       setState(() => _error = 'Sign-in failed. Please try again.');
     } finally {

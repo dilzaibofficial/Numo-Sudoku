@@ -1,1 +1,27 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"numo-sudoku-dev","appId":"1:257496182337:android:5ce69a851b6ce09311e0c0","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"numo-sudoku-dev","configurations":{"android":"1:257496182337:android:5ce69a851b6ce09311e0c0"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "numo-sudoku-dev",
+          "appId": "1:257496182337:android:5ce69a851b6ce09311e0c0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "numo-sudoku-dev",
+          "configurations": {
+            "android": "1:257496182337:android:5ce69a851b6ce09311e0c0"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

@@ -6,6 +6,7 @@ import 'app/router/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'app/theme/theme_mode_controller.dart';
 import 'features/auth/application/auth_controller.dart';
+import 'features/profile/data/profile_repository.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -15,7 +16,8 @@ void main() async {
   final container = ProviderContainer();
   // Guarantees a signed-in (at minimum anonymous) user before the UI ever
   // renders, so gameplay never has to wait on or gate behind auth.
-  await container.read(authControllerProvider).ensureSignedIn();
+  final user = await container.read(authControllerProvider).ensureSignedIn();
+  await container.read(profileRepositoryProvider).ensureProfile(user);
 
   runApp(
     UncontrolledProviderScope(

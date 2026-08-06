@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+
+      match /achievements/{achievementId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    match /achievementDefs/{id} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    match /friendRequests/{id} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUid;
+      allow update, delete: if request.auth != null &&
+        (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+    }
+
+    match /dailyChallenges/{dateId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+
+      match /leaderboard/{uid} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    match /friendChallenges/{id} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.fromUid;
+      allow update: if request.auth != null &&
+        (request.auth.uid == resource.data.fromUid || request.auth.uid == resource.data.toUid);
+    }
+
+    match /matchHistory/{matchId} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == resource.data.playerAUid || request.auth.uid == resource.data.playerBUid);
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /puzzlePacks/{id} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
