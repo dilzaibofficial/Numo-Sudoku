@@ -1,3 +1,6 @@
+# Claude Code session/tooling artifacts (not project source)
+.claude/
+
 # Miscellaneous
 *.class
 *.log

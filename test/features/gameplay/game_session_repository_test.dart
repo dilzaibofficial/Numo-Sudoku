@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:numo_sudoku/features/gameplay/data/game_session_repository.dart';
 import 'package:numo_sudoku/features/gameplay/domain/game_board_state.dart';
 import 'package:numo_sudoku/features/puzzle_bank/data/app_database.dart';
+import 'package:numo_sudoku/features/sudoku_engine/domain/difficulty.dart';
 import 'package:numo_sudoku/features/sudoku_engine/domain/grid_spec.dart';
 import 'package:numo_sudoku/features/sudoku_engine/generator/sudoku_generator.dart';
 import 'dart:math';
@@ -31,6 +32,7 @@ void main() {
       final generated = generator.generate(random: Random(5), targetClueCount: 40);
       var state = GameBoardState.fromPuzzle(
         spec: GridSpec.size9,
+        difficulty: PuzzleDifficulty.easy,
         puzzle: generated.puzzle,
         solution: generated.solution,
       );
@@ -69,6 +71,7 @@ void main() {
       final generated = generator.generate(random: Random(6), targetClueCount: 11);
       final state = GameBoardState.fromPuzzle(
         spec: GridSpec.size4,
+        difficulty: PuzzleDifficulty.easy,
         puzzle: generated.puzzle,
         solution: generated.solution,
       );
@@ -88,11 +91,13 @@ void main() {
 
       await repository.save(GameBoardState.fromPuzzle(
         spec: GridSpec.size9,
+        difficulty: PuzzleDifficulty.easy,
         puzzle: a.puzzle,
         solution: a.solution,
       ));
       await repository.save(GameBoardState.fromPuzzle(
         spec: GridSpec.size4,
+        difficulty: PuzzleDifficulty.easy,
         puzzle: b.puzzle,
         solution: b.solution,
       ));

@@ -6,10 +6,12 @@ import 'package:drift/drift.dart';
 class InProgressGames extends Table {
   IntColumn get id => integer().withDefault(const Constant(1))();
   IntColumn get gridSize => integer()();
+  TextColumn get difficulty => text().withDefault(const Constant('normal'))();
   TextColumn get givens => text()();
   TextColumn get values => text()();
   TextColumn get solution => text()();
   TextColumn get notes => text()();
+  TextColumn get hintedCells => text().withDefault(const Constant(''))();
   IntColumn get selectedRow => integer().nullable()();
   IntColumn get selectedCol => integer().nullable()();
   BoolColumn get notesMode => boolean().withDefault(const Constant(false))();

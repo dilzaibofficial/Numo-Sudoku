@@ -18,10 +18,10 @@ const _countPerBand = {
   16: 300, // 4x4
   36: 300, // 6x6
   144: 150, // 12x12
-  256: 80, // 16x16
+  256: 40, // 16x16 — kept small: hole-digging on 256 cells is slow per puzzle
 };
 
-Future<void> main() async {
+Future<void> main(List<String> args) async {
   const outputPath = 'assets/puzzles/numo_sudoku_seed.sqlite';
   final outputFile = File(outputPath);
   if (!outputFile.existsSync()) {
@@ -31,7 +31,11 @@ Future<void> main() async {
 
   final db = AppDatabase.withExecutor(NativeDatabase(outputFile));
   final random = Random(2026);
-  final specs = [GridSpec.size4, GridSpec.size6, GridSpec.size12, GridSpec.size16];
+  // Pass a size (4/6/12/16) as the first CLI arg to only regenerate that
+  // one, e.g. `dart run tools/generate_bank/generate_sizes.dart 16`.
+  final onlySize = args.isNotEmpty ? int.parse(args[0]) : null;
+  final allSpecs = [GridSpec.size4, GridSpec.size6, GridSpec.size12, GridSpec.size16];
+  final specs = onlySize == null ? allSpecs : allSpecs.where((s) => s.size == onlySize);
 
   for (final spec in specs) {
     final countPerBand = _countPerBand[spec.cellCount]!;
@@ -39,27 +43,26 @@ Future<void> main() async {
 
     for (final difficulty in PuzzleDifficulty.values) {
       final range = DifficultyTable.rangeFor(spec.cellCount, difficulty)!;
-      final entries = <PuzzlesCompanion>[];
 
       for (var i = 0; i < countPerBand; i++) {
         final target = range.min + random.nextInt(range.max - range.min + 1);
         final generated = generator.generate(
           random: random,
           targetClueCount: target,
-          timeBudget: const Duration(seconds: 3),
+          timeBudget: const Duration(seconds: 2),
         );
-        entries.add(PuzzlesCompanion.insert(
-          gridSize: spec.size,
-          difficulty: difficulty.name,
-          clueCount: generated.clueCount,
-          puzzle: encodeBoard(generated.puzzle),
-          solution: encodeBoard(generated.solution),
-          source: 'generated',
-        ));
+        await db.insertPuzzles([
+          PuzzlesCompanion.insert(
+            gridSize: spec.size,
+            difficulty: difficulty.name,
+            clueCount: generated.clueCount,
+            puzzle: encodeBoard(generated.puzzle),
+            solution: encodeBoard(generated.solution),
+            source: 'generated',
+          ),
+        ]);
+        stdout.writeln('${spec.size}x${spec.size} ${difficulty.name}: ${i + 1}/$countPerBand');
       }
-
-      await db.insertPuzzles(entries);
-      stdout.writeln('${spec.size}x${spec.size} ${difficulty.name}: $countPerBand puzzles');
     }
   }
 

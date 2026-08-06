@@ -96,7 +96,12 @@ class GameController extends Notifier<GameBoardState?> {
       solution = generated.solution;
     }
 
-    _setState(GameBoardState.fromPuzzle(spec: spec, puzzle: puzzle, solution: solution));
+    _setState(GameBoardState.fromPuzzle(
+      spec: spec,
+      difficulty: difficulty,
+      puzzle: puzzle,
+      solution: solution,
+    ));
     _startTicker();
   }
 
@@ -255,6 +260,7 @@ class GameController extends Notifier<GameBoardState?> {
       values: newValues,
       notes: newNotes,
       isComplete: isComplete,
+      hintedCells: {...current.hintedCells, index},
     ));
 
     if (isComplete) {

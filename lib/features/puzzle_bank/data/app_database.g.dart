@@ -574,6 +574,18 @@ class $InProgressGamesTable extends InProgressGames
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _difficultyMeta = const VerificationMeta(
+    'difficulty',
+  );
+  @override
+  late final GeneratedColumn<String> difficulty = GeneratedColumn<String>(
+    'difficulty',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('normal'),
+  );
   static const VerificationMeta _givensMeta = const VerificationMeta('givens');
   @override
   late final GeneratedColumn<String> givens = GeneratedColumn<String>(
@@ -611,6 +623,18 @@ class $InProgressGamesTable extends InProgressGames
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hintedCellsMeta = const VerificationMeta(
+    'hintedCells',
+  );
+  @override
+  late final GeneratedColumn<String> hintedCells = GeneratedColumn<String>(
+    'hinted_cells',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _selectedRowMeta = const VerificationMeta(
     'selectedRow',
@@ -692,10 +716,12 @@ class $InProgressGamesTable extends InProgressGames
   List<GeneratedColumn> get $columns => [
     id,
     gridSize,
+    difficulty,
     givens,
     values,
     solution,
     notes,
+    hintedCells,
     selectedRow,
     selectedCol,
     notesMode,
@@ -725,6 +751,12 @@ class $InProgressGamesTable extends InProgressGames
       );
     } else if (isInserting) {
       context.missing(_gridSizeMeta);
+    }
+    if (data.containsKey('difficulty')) {
+      context.handle(
+        _difficultyMeta,
+        difficulty.isAcceptableOrUnknown(data['difficulty']!, _difficultyMeta),
+      );
     }
     if (data.containsKey('givens')) {
       context.handle(
@@ -757,6 +789,15 @@ class $InProgressGamesTable extends InProgressGames
       );
     } else if (isInserting) {
       context.missing(_notesMeta);
+    }
+    if (data.containsKey('hinted_cells')) {
+      context.handle(
+        _hintedCellsMeta,
+        hintedCells.isAcceptableOrUnknown(
+          data['hinted_cells']!,
+          _hintedCellsMeta,
+        ),
+      );
     }
     if (data.containsKey('selected_row')) {
       context.handle(
@@ -820,6 +861,10 @@ class $InProgressGamesTable extends InProgressGames
         DriftSqlType.int,
         data['${effectivePrefix}grid_size'],
       )!,
+      difficulty: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}difficulty'],
+      )!,
       givens: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}givens'],
@@ -835,6 +880,10 @@ class $InProgressGamesTable extends InProgressGames
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
+      )!,
+      hintedCells: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hinted_cells'],
       )!,
       selectedRow: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -872,10 +921,12 @@ class $InProgressGamesTable extends InProgressGames
 class InProgressGame extends DataClass implements Insertable<InProgressGame> {
   final int id;
   final int gridSize;
+  final String difficulty;
   final String givens;
   final String values;
   final String solution;
   final String notes;
+  final String hintedCells;
   final int? selectedRow;
   final int? selectedCol;
   final bool notesMode;
@@ -885,10 +936,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
   const InProgressGame({
     required this.id,
     required this.gridSize,
+    required this.difficulty,
     required this.givens,
     required this.values,
     required this.solution,
     required this.notes,
+    required this.hintedCells,
     this.selectedRow,
     this.selectedCol,
     required this.notesMode,
@@ -901,10 +954,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['grid_size'] = Variable<int>(gridSize);
+    map['difficulty'] = Variable<String>(difficulty);
     map['givens'] = Variable<String>(givens);
     map['values'] = Variable<String>(values);
     map['solution'] = Variable<String>(solution);
     map['notes'] = Variable<String>(notes);
+    map['hinted_cells'] = Variable<String>(hintedCells);
     if (!nullToAbsent || selectedRow != null) {
       map['selected_row'] = Variable<int>(selectedRow);
     }
@@ -922,10 +977,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     return InProgressGamesCompanion(
       id: Value(id),
       gridSize: Value(gridSize),
+      difficulty: Value(difficulty),
       givens: Value(givens),
       values: Value(values),
       solution: Value(solution),
       notes: Value(notes),
+      hintedCells: Value(hintedCells),
       selectedRow: selectedRow == null && nullToAbsent
           ? const Value.absent()
           : Value(selectedRow),
@@ -947,10 +1004,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     return InProgressGame(
       id: serializer.fromJson<int>(json['id']),
       gridSize: serializer.fromJson<int>(json['gridSize']),
+      difficulty: serializer.fromJson<String>(json['difficulty']),
       givens: serializer.fromJson<String>(json['givens']),
       values: serializer.fromJson<String>(json['values']),
       solution: serializer.fromJson<String>(json['solution']),
       notes: serializer.fromJson<String>(json['notes']),
+      hintedCells: serializer.fromJson<String>(json['hintedCells']),
       selectedRow: serializer.fromJson<int?>(json['selectedRow']),
       selectedCol: serializer.fromJson<int?>(json['selectedCol']),
       notesMode: serializer.fromJson<bool>(json['notesMode']),
@@ -965,10 +1024,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'gridSize': serializer.toJson<int>(gridSize),
+      'difficulty': serializer.toJson<String>(difficulty),
       'givens': serializer.toJson<String>(givens),
       'values': serializer.toJson<String>(values),
       'solution': serializer.toJson<String>(solution),
       'notes': serializer.toJson<String>(notes),
+      'hintedCells': serializer.toJson<String>(hintedCells),
       'selectedRow': serializer.toJson<int?>(selectedRow),
       'selectedCol': serializer.toJson<int?>(selectedCol),
       'notesMode': serializer.toJson<bool>(notesMode),
@@ -981,10 +1042,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
   InProgressGame copyWith({
     int? id,
     int? gridSize,
+    String? difficulty,
     String? givens,
     String? values,
     String? solution,
     String? notes,
+    String? hintedCells,
     Value<int?> selectedRow = const Value.absent(),
     Value<int?> selectedCol = const Value.absent(),
     bool? notesMode,
@@ -994,10 +1057,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
   }) => InProgressGame(
     id: id ?? this.id,
     gridSize: gridSize ?? this.gridSize,
+    difficulty: difficulty ?? this.difficulty,
     givens: givens ?? this.givens,
     values: values ?? this.values,
     solution: solution ?? this.solution,
     notes: notes ?? this.notes,
+    hintedCells: hintedCells ?? this.hintedCells,
     selectedRow: selectedRow.present ? selectedRow.value : this.selectedRow,
     selectedCol: selectedCol.present ? selectedCol.value : this.selectedCol,
     notesMode: notesMode ?? this.notesMode,
@@ -1009,10 +1074,16 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     return InProgressGame(
       id: data.id.present ? data.id.value : this.id,
       gridSize: data.gridSize.present ? data.gridSize.value : this.gridSize,
+      difficulty: data.difficulty.present
+          ? data.difficulty.value
+          : this.difficulty,
       givens: data.givens.present ? data.givens.value : this.givens,
       values: data.values.present ? data.values.value : this.values,
       solution: data.solution.present ? data.solution.value : this.solution,
       notes: data.notes.present ? data.notes.value : this.notes,
+      hintedCells: data.hintedCells.present
+          ? data.hintedCells.value
+          : this.hintedCells,
       selectedRow: data.selectedRow.present
           ? data.selectedRow.value
           : this.selectedRow,
@@ -1035,10 +1106,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
     return (StringBuffer('InProgressGame(')
           ..write('id: $id, ')
           ..write('gridSize: $gridSize, ')
+          ..write('difficulty: $difficulty, ')
           ..write('givens: $givens, ')
           ..write('values: $values, ')
           ..write('solution: $solution, ')
           ..write('notes: $notes, ')
+          ..write('hintedCells: $hintedCells, ')
           ..write('selectedRow: $selectedRow, ')
           ..write('selectedCol: $selectedCol, ')
           ..write('notesMode: $notesMode, ')
@@ -1053,10 +1126,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
   int get hashCode => Object.hash(
     id,
     gridSize,
+    difficulty,
     givens,
     values,
     solution,
     notes,
+    hintedCells,
     selectedRow,
     selectedCol,
     notesMode,
@@ -1070,10 +1145,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
       (other is InProgressGame &&
           other.id == this.id &&
           other.gridSize == this.gridSize &&
+          other.difficulty == this.difficulty &&
           other.givens == this.givens &&
           other.values == this.values &&
           other.solution == this.solution &&
           other.notes == this.notes &&
+          other.hintedCells == this.hintedCells &&
           other.selectedRow == this.selectedRow &&
           other.selectedCol == this.selectedCol &&
           other.notesMode == this.notesMode &&
@@ -1085,10 +1162,12 @@ class InProgressGame extends DataClass implements Insertable<InProgressGame> {
 class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
   final Value<int> id;
   final Value<int> gridSize;
+  final Value<String> difficulty;
   final Value<String> givens;
   final Value<String> values;
   final Value<String> solution;
   final Value<String> notes;
+  final Value<String> hintedCells;
   final Value<int?> selectedRow;
   final Value<int?> selectedCol;
   final Value<bool> notesMode;
@@ -1098,10 +1177,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
   const InProgressGamesCompanion({
     this.id = const Value.absent(),
     this.gridSize = const Value.absent(),
+    this.difficulty = const Value.absent(),
     this.givens = const Value.absent(),
     this.values = const Value.absent(),
     this.solution = const Value.absent(),
     this.notes = const Value.absent(),
+    this.hintedCells = const Value.absent(),
     this.selectedRow = const Value.absent(),
     this.selectedCol = const Value.absent(),
     this.notesMode = const Value.absent(),
@@ -1112,10 +1193,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
   InProgressGamesCompanion.insert({
     this.id = const Value.absent(),
     required int gridSize,
+    this.difficulty = const Value.absent(),
     required String givens,
     required String values,
     required String solution,
     required String notes,
+    this.hintedCells = const Value.absent(),
     this.selectedRow = const Value.absent(),
     this.selectedCol = const Value.absent(),
     this.notesMode = const Value.absent(),
@@ -1130,10 +1213,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
   static Insertable<InProgressGame> custom({
     Expression<int>? id,
     Expression<int>? gridSize,
+    Expression<String>? difficulty,
     Expression<String>? givens,
     Expression<String>? values,
     Expression<String>? solution,
     Expression<String>? notes,
+    Expression<String>? hintedCells,
     Expression<int>? selectedRow,
     Expression<int>? selectedCol,
     Expression<bool>? notesMode,
@@ -1144,10 +1229,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (gridSize != null) 'grid_size': gridSize,
+      if (difficulty != null) 'difficulty': difficulty,
       if (givens != null) 'givens': givens,
       if (values != null) 'values': values,
       if (solution != null) 'solution': solution,
       if (notes != null) 'notes': notes,
+      if (hintedCells != null) 'hinted_cells': hintedCells,
       if (selectedRow != null) 'selected_row': selectedRow,
       if (selectedCol != null) 'selected_col': selectedCol,
       if (notesMode != null) 'notes_mode': notesMode,
@@ -1160,10 +1247,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
   InProgressGamesCompanion copyWith({
     Value<int>? id,
     Value<int>? gridSize,
+    Value<String>? difficulty,
     Value<String>? givens,
     Value<String>? values,
     Value<String>? solution,
     Value<String>? notes,
+    Value<String>? hintedCells,
     Value<int?>? selectedRow,
     Value<int?>? selectedCol,
     Value<bool>? notesMode,
@@ -1174,10 +1263,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
     return InProgressGamesCompanion(
       id: id ?? this.id,
       gridSize: gridSize ?? this.gridSize,
+      difficulty: difficulty ?? this.difficulty,
       givens: givens ?? this.givens,
       values: values ?? this.values,
       solution: solution ?? this.solution,
       notes: notes ?? this.notes,
+      hintedCells: hintedCells ?? this.hintedCells,
       selectedRow: selectedRow ?? this.selectedRow,
       selectedCol: selectedCol ?? this.selectedCol,
       notesMode: notesMode ?? this.notesMode,
@@ -1196,6 +1287,9 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
     if (gridSize.present) {
       map['grid_size'] = Variable<int>(gridSize.value);
     }
+    if (difficulty.present) {
+      map['difficulty'] = Variable<String>(difficulty.value);
+    }
     if (givens.present) {
       map['givens'] = Variable<String>(givens.value);
     }
@@ -1207,6 +1301,9 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
+    }
+    if (hintedCells.present) {
+      map['hinted_cells'] = Variable<String>(hintedCells.value);
     }
     if (selectedRow.present) {
       map['selected_row'] = Variable<int>(selectedRow.value);
@@ -1234,10 +1331,12 @@ class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
     return (StringBuffer('InProgressGamesCompanion(')
           ..write('id: $id, ')
           ..write('gridSize: $gridSize, ')
+          ..write('difficulty: $difficulty, ')
           ..write('givens: $givens, ')
           ..write('values: $values, ')
           ..write('solution: $solution, ')
           ..write('notes: $notes, ')
+          ..write('hintedCells: $hintedCells, ')
           ..write('selectedRow: $selectedRow, ')
           ..write('selectedCol: $selectedCol, ')
           ..write('notesMode: $notesMode, ')
@@ -1536,10 +1635,12 @@ typedef $$InProgressGamesTableCreateCompanionBuilder =
     InProgressGamesCompanion Function({
       Value<int> id,
       required int gridSize,
+      Value<String> difficulty,
       required String givens,
       required String values,
       required String solution,
       required String notes,
+      Value<String> hintedCells,
       Value<int?> selectedRow,
       Value<int?> selectedCol,
       Value<bool> notesMode,
@@ -1551,10 +1652,12 @@ typedef $$InProgressGamesTableUpdateCompanionBuilder =
     InProgressGamesCompanion Function({
       Value<int> id,
       Value<int> gridSize,
+      Value<String> difficulty,
       Value<String> givens,
       Value<String> values,
       Value<String> solution,
       Value<String> notes,
+      Value<String> hintedCells,
       Value<int?> selectedRow,
       Value<int?> selectedCol,
       Value<bool> notesMode,
@@ -1582,6 +1685,11 @@ class $$InProgressGamesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get givens => $composableBuilder(
     column: $table.givens,
     builder: (column) => ColumnFilters(column),
@@ -1599,6 +1707,11 @@ class $$InProgressGamesTableFilterComposer
 
   ColumnFilters<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hintedCells => $composableBuilder(
+    column: $table.hintedCells,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1652,6 +1765,11 @@ class $$InProgressGamesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get givens => $composableBuilder(
     column: $table.givens,
     builder: (column) => ColumnOrderings(column),
@@ -1669,6 +1787,11 @@ class $$InProgressGamesTableOrderingComposer
 
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hintedCells => $composableBuilder(
+    column: $table.hintedCells,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1718,6 +1841,11 @@ class $$InProgressGamesTableAnnotationComposer
   GeneratedColumn<int> get gridSize =>
       $composableBuilder(column: $table.gridSize, builder: (column) => column);
 
+  GeneratedColumn<String> get difficulty => $composableBuilder(
+    column: $table.difficulty,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get givens =>
       $composableBuilder(column: $table.givens, builder: (column) => column);
 
@@ -1729,6 +1857,11 @@ class $$InProgressGamesTableAnnotationComposer
 
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get hintedCells => $composableBuilder(
+    column: $table.hintedCells,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get selectedRow => $composableBuilder(
     column: $table.selectedRow,
@@ -1796,10 +1929,12 @@ class $$InProgressGamesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> gridSize = const Value.absent(),
+                Value<String> difficulty = const Value.absent(),
                 Value<String> givens = const Value.absent(),
                 Value<String> values = const Value.absent(),
                 Value<String> solution = const Value.absent(),
                 Value<String> notes = const Value.absent(),
+                Value<String> hintedCells = const Value.absent(),
                 Value<int?> selectedRow = const Value.absent(),
                 Value<int?> selectedCol = const Value.absent(),
                 Value<bool> notesMode = const Value.absent(),
@@ -1809,10 +1944,12 @@ class $$InProgressGamesTableTableManager
               }) => InProgressGamesCompanion(
                 id: id,
                 gridSize: gridSize,
+                difficulty: difficulty,
                 givens: givens,
                 values: values,
                 solution: solution,
                 notes: notes,
+                hintedCells: hintedCells,
                 selectedRow: selectedRow,
                 selectedCol: selectedCol,
                 notesMode: notesMode,
@@ -1824,10 +1961,12 @@ class $$InProgressGamesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int gridSize,
+                Value<String> difficulty = const Value.absent(),
                 required String givens,
                 required String values,
                 required String solution,
                 required String notes,
+                Value<String> hintedCells = const Value.absent(),
                 Value<int?> selectedRow = const Value.absent(),
                 Value<int?> selectedCol = const Value.absent(),
                 Value<bool> notesMode = const Value.absent(),
@@ -1837,10 +1976,12 @@ class $$InProgressGamesTableTableManager
               }) => InProgressGamesCompanion.insert(
                 id: id,
                 gridSize: gridSize,
+                difficulty: difficulty,
                 givens: givens,
                 values: values,
                 solution: solution,
                 notes: notes,
+                hintedCells: hintedCells,
                 selectedRow: selectedRow,
                 selectedCol: selectedCol,
                 notesMode: notesMode,

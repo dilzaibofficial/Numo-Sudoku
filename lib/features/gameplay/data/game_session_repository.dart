@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../puzzle_bank/data/app_database.dart';
 import '../../puzzle_bank/data/puzzle_repository.dart';
+import '../../sudoku_engine/domain/difficulty.dart';
 import '../../sudoku_engine/domain/grid_spec.dart';
 import '../domain/game_board_state.dart';
 
@@ -18,10 +19,12 @@ class GameSessionRepository {
       InProgressGamesCompanion.insert(
         id: const Value(1),
         gridSize: state.spec.size,
+        difficulty: Value(state.difficulty.name),
         givens: encodeBoard(state.givens),
         values: encodeBoard(state.values),
         solution: encodeBoard(state.solution),
         notes: encodeNotes(state.notes),
+        hintedCells: Value(encodeIndexSet(state.hintedCells)),
         selectedRow: Value(state.selectedRow),
         selectedCol: Value(state.selectedCol),
         notesMode: Value(state.notesMode),
@@ -37,12 +40,18 @@ class GameSessionRepository {
     if (row == null) return null;
 
     final spec = GridSpec.all.firstWhere((s) => s.size == row.gridSize);
+    final difficulty = PuzzleDifficulty.values.firstWhere(
+      (d) => d.name == row.difficulty,
+      orElse: () => PuzzleDifficulty.normal,
+    );
     return GameBoardState(
       spec: spec,
+      difficulty: difficulty,
       givens: decodeBoard(row.givens),
       values: decodeBoard(row.values),
       solution: decodeBoard(row.solution),
       notes: decodeNotes(row.notes),
+      hintedCells: decodeIndexSet(row.hintedCells),
       selectedRow: row.selectedRow,
       selectedCol: row.selectedCol,
       notesMode: row.notesMode,

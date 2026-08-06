@@ -22,11 +22,12 @@ class NumberPad extends StatelessWidget {
       runSpacing: 8,
       children: [
         for (var value = 1; value <= size; value++)
-          _NumberButton(
-            label: glyphFor(value),
-            remaining: remainingCounts[value - 1],
-            onTap: remainingCounts[value - 1] > 0 ? () => onValueTap(value) : null,
-          ),
+          if (remainingCounts[value - 1] > 0)
+            _NumberButton(
+              label: glyphFor(value),
+              remaining: remainingCounts[value - 1],
+              onTap: () => onValueTap(value),
+            ),
       ],
     );
   }
@@ -41,32 +42,39 @@ class _NumberButton extends StatelessWidget {
 
   final String label;
   final int remaining;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onTap != null;
     final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 44,
-      height: 44,
+      height: 52,
       child: Material(
-        color: enabled ? colorScheme.surfaceContainerHigh : Colors.transparent,
-        shape: const CircleBorder(),
+        color: colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(10),
         child: InkWell(
-          customBorder: const CircleBorder(),
+          borderRadius: BorderRadius.circular(10),
           onTap: onTap,
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: enabled
-                    ? colorScheme.onSurface
-                    : colorScheme.onSurface.withValues(alpha: 0.25),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
+                ),
               ),
-            ),
+              Text(
+                '$remaining',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
+              ),
+            ],
           ),
         ),
       ),

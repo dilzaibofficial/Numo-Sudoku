@@ -21,6 +21,11 @@ List<Set<int>> decodeNotes(String encoded) {
   }).toList();
 }
 
+String encodeIndexSet(Set<int> indices) => indices.join(',');
+
+Set<int> decodeIndexSet(String encoded) =>
+    encoded.isEmpty ? {} : encoded.split(',').map(int.parse).toSet();
+
 @DriftDatabase(tables: [Puzzles, InProgressGames])
 class AppDatabase extends _$AppDatabase {
   /// Deliberately kept free of any Flutter dependency (no path_provider)
@@ -32,13 +37,17 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.connection);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) => m.createAll(),
         onUpgrade: (m, from, to) async {
           if (from < 2) await m.createTable(inProgressGames);
+          if (from < 3) {
+            await m.addColumn(inProgressGames, inProgressGames.difficulty);
+            await m.addColumn(inProgressGames, inProgressGames.hintedCells);
+          }
         },
       );
 
