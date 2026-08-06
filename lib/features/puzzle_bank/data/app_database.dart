@@ -1,9 +1,4 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import 'in_progress_game_table.dart';
 import 'puzzle_table.dart';
@@ -28,11 +23,12 @@ List<Set<int>> decodeNotes(String encoded) {
 
 @DriftDatabase(tables: [Puzzles, InProgressGames])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
-
-  /// Bypasses the default app-documents-directory connection — used by unit
-  /// tests (in-memory) and the offline puzzle-bank seed CLI (a specific
-  /// output file).
+  /// Deliberately kept free of any Flutter dependency (no path_provider)
+  /// so this class — and anything that imports it — stays runnable under
+  /// plain `dart run` (used by the offline puzzle-bank seed CLI) as well
+  /// as `flutter test`. The real app's app-documents-directory connection
+  /// is constructed in puzzle_repository.dart, where Flutter is already a
+  /// given.
   AppDatabase.withExecutor(super.connection);
 
   @override
@@ -90,12 +86,4 @@ class AppDatabase extends _$AppDatabase {
   Future<void> insertPuzzles(List<PuzzlesCompanion> entries) async {
     await batch((batch) => batch.insertAll(puzzles, entries));
   }
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'numo_sudoku.sqlite'));
-    return NativeDatabase.createInBackground(file);
-  });
 }
