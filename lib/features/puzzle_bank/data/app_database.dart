@@ -17,7 +17,11 @@ Uint8List decodeBoard(String encoded) =>
 @DriftDatabase(tables: [Puzzles])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
-  AppDatabase.forTesting(super.connection);
+
+  /// Bypasses the default app-documents-directory connection — used by unit
+  /// tests (in-memory) and the offline puzzle-bank seed CLI (a specific
+  /// output file).
+  AppDatabase.withExecutor(super.connection);
 
   @override
   int get schemaVersion => 1;

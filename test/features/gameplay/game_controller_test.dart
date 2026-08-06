@@ -23,7 +23,7 @@ void main() {
       container = ProviderContainer(
         overrides: [
           appDatabaseProvider.overrideWithValue(
-            AppDatabase.forTesting(NativeDatabase.memory()),
+            AppDatabase.withExecutor(NativeDatabase.memory()),
           ),
         ],
       );

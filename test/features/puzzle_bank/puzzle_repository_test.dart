@@ -15,7 +15,7 @@ void main() {
     late PuzzleRepository repository;
 
     setUp(() {
-      db = AppDatabase.forTesting(NativeDatabase.memory());
+      db = AppDatabase.withExecutor(NativeDatabase.memory());
       repository = PuzzleRepository(db);
     });
 
