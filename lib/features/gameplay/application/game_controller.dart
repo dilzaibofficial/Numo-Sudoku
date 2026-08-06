@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../auth/application/auth_controller.dart';
+import '../../profile/data/profile_repository.dart';
 import '../../puzzle_bank/data/puzzle_repository.dart';
 import '../../sudoku_engine/domain/difficulty.dart';
 import '../../sudoku_engine/domain/grid_spec.dart';
@@ -40,6 +42,23 @@ class GameController extends Notifier<GameBoardState?> {
   void _setState(GameBoardState newState) {
     state = newState;
     unawaited(_session.save(newState));
+  }
+
+  /// Best-effort cloud stats sync — must never take gameplay down with it,
+  /// whether Firebase isn't reachable (offline play) or isn't initialized
+  /// at all (e.g. widget/unit tests that don't call Firebase.initializeApp).
+  void _recordResult({required bool won}) {
+    try {
+      final uid = ref.read(firebaseAuthProvider).currentUser?.uid;
+      if (uid == null) return;
+      unawaited(
+        ref.read(profileRepositoryProvider).recordGameResult(uid: uid, won: won).catchError(
+              (_) {},
+            ),
+      );
+    } catch (_) {
+      // Firebase unavailable in this environment.
+    }
   }
 
   /// Resumes the previously saved game if one exists and matches [spec];
@@ -155,6 +174,9 @@ class GameController extends Notifier<GameBoardState?> {
     if (isComplete) {
       _ticker?.cancel();
       unawaited(_session.clear());
+      _recordResult(won: true);
+    } else if (newMistakes >= GameBoardState.maxMistakes && current.mistakes < GameBoardState.maxMistakes) {
+      _recordResult(won: false);
     }
   }
 
@@ -238,6 +260,7 @@ class GameController extends Notifier<GameBoardState?> {
     if (isComplete) {
       _ticker?.cancel();
       unawaited(_session.clear());
+      _recordResult(won: true);
     }
   }
 
