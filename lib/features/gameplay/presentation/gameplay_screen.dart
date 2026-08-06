@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../home/presentation/new_game_screen.dart';
 import '../../sudoku_engine/domain/difficulty.dart';
 import '../../sudoku_engine/domain/grid_spec.dart';
 import '../application/game_controller.dart';
 import '../domain/game_board_state.dart';
+import 'confetti_overlay.dart';
 import 'number_pad.dart';
 import 'sudoku_board_widget.dart';
 
@@ -43,49 +46,60 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
       ),
       body: state == null
           ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _StatusBar(
-                      mistakes: state.mistakes,
-                      maxMistakes: GameBoardState.maxMistakes,
-                      elapsed: state.elapsed,
+          : Stack(
+              children: [
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _StatusBar(
+                          mistakes: state.mistakes,
+                          maxMistakes: GameBoardState.maxMistakes,
+                          elapsed: state.elapsed,
+                        ),
+                        const SizedBox(height: 12),
+                        SudokuBoardWidget(
+                          state: state,
+                          onCellTap: (row, col) =>
+                              ref.read(gameControllerProvider.notifier).selectCell(row, col),
+                        ),
+                        const SizedBox(height: 16),
+                        if (state.isComplete)
+                          _CompleteBanner(
+                            elapsed: state.elapsed,
+                            mistakes: state.mistakes,
+                            spec: widget.spec,
+                            difficulty: widget.difficulty,
+                          )
+                        else if (state.isGameOver)
+                          const _GameOverBanner()
+                        else ...[
+                          _Toolbar(
+                            notesMode: state.notesMode,
+                            canUndo: state.canUndo,
+                            onUndo: () => ref.read(gameControllerProvider.notifier).undo(),
+                            onErase: () =>
+                                ref.read(gameControllerProvider.notifier).clearSelectedCell(),
+                            onToggleNotes: () =>
+                                ref.read(gameControllerProvider.notifier).toggleNotesMode(),
+                            onHint: () => ref.read(gameControllerProvider.notifier).useHint(),
+                          ),
+                          const SizedBox(height: 16),
+                          NumberPad(
+                            size: state.spec.size,
+                            remainingCounts: _remainingCounts(state.spec.size, state.values),
+                            onValueTap: (value) =>
+                                ref.read(gameControllerProvider.notifier).enterValue(value),
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    SudokuBoardWidget(
-                      state: state,
-                      onCellTap: (row, col) =>
-                          ref.read(gameControllerProvider.notifier).selectCell(row, col),
-                    ),
-                    const SizedBox(height: 16),
-                    if (state.isComplete)
-                      const _CompleteBanner()
-                    else if (state.isGameOver)
-                      const _GameOverBanner()
-                    else ...[
-                      _Toolbar(
-                        notesMode: state.notesMode,
-                        canUndo: state.canUndo,
-                        onUndo: () => ref.read(gameControllerProvider.notifier).undo(),
-                        onErase: () =>
-                            ref.read(gameControllerProvider.notifier).clearSelectedCell(),
-                        onToggleNotes: () =>
-                            ref.read(gameControllerProvider.notifier).toggleNotesMode(),
-                        onHint: () => ref.read(gameControllerProvider.notifier).useHint(),
-                      ),
-                      const SizedBox(height: 16),
-                      NumberPad(
-                        size: state.spec.size,
-                        remainingCounts: _remainingCounts(state.spec.size, state.values),
-                        onValueTap: (value) =>
-                            ref.read(gameControllerProvider.notifier).enterValue(value),
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
+                if (state.isComplete)
+                  Positioned.fill(child: ConfettiOverlay(key: ValueKey(widget.key))),
+              ],
             ),
     );
   }
@@ -213,16 +227,79 @@ class _ToolbarButton extends StatelessWidget {
 }
 
 class _CompleteBanner extends StatelessWidget {
-  const _CompleteBanner();
+  const _CompleteBanner({
+    required this.elapsed,
+    required this.mistakes,
+    required this.spec,
+    required this.difficulty,
+  });
+
+  final Duration elapsed;
+  final int mistakes;
+  final GridSpec spec;
+  final PuzzleDifficulty difficulty;
 
   @override
   Widget build(BuildContext context) {
+    final minutes = elapsed.inMinutes.toString().padLeft(2, '0');
+    final seconds = (elapsed.inSeconds % 60).toString().padLeft(2, '0');
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text('Puzzle solved!', textAlign: TextAlign.center),
+      color: colorScheme.primaryContainer,
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('🎉', style: const TextStyle(fontSize: 40)),
+            const SizedBox(height: 8),
+            Text(
+              'Puzzle Solved!',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(color: colorScheme.onPrimaryContainer),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _StatChip(icon: Icons.timer_outlined, label: '$minutes:$seconds'),
+                const SizedBox(width: 12),
+                _StatChip(icon: Icons.error_outline, label: '$mistakes mistakes'),
+              ],
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () => context.pushReplacement(
+                '/play',
+                extra: NewGameArgs(spec: spec, difficulty: difficulty),
+              ),
+              icon: const Icon(Icons.refresh),
+              label: const Text('New Puzzle'),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Chip(
+      avatar: Icon(icon, size: 18, color: colorScheme.onSecondaryContainer),
+      label: Text(label),
+      backgroundColor: colorScheme.secondaryContainer,
     );
   }
 }

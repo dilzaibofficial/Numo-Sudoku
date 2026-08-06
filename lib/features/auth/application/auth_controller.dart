@@ -74,6 +74,37 @@ class AuthController {
     return result.user!;
   }
 
+  /// Creates a new email/password account, upgrading the current anonymous
+  /// session via linkWithCredential when there is one (same reasoning as
+  /// signInWithGoogle). If the email is already registered, falls back to
+  /// signing into that existing account with the given password (wrong
+  /// password surfaces as the normal FirebaseAuthException).
+  Future<User> registerWithEmail(String email, String password) async {
+    final credential = EmailAuthProvider.credential(email: email, password: password);
+
+    final current = _auth.currentUser;
+    if (current != null && current.isAnonymous) {
+      try {
+        final result = await current.linkWithCredential(credential);
+        return result.user!;
+      } on FirebaseAuthException catch (e) {
+        if (e.code != 'email-already-in-use' && e.code != 'credential-already-in-use') {
+          rethrow;
+        }
+        final result = await _auth.signInWithCredential(credential);
+        return result.user!;
+      }
+    }
+
+    final result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    return result.user!;
+  }
+
+  Future<User> signInWithEmail(String email, String password) async {
+    final result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    return result.user!;
+  }
+
   Future<void> signOut() async {
     await GoogleSignIn.instance.signOut();
     await _auth.signOut();

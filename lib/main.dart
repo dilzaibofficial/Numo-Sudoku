@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,10 +16,12 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final container = ProviderContainer();
-  // Guarantees a signed-in (at minimum anonymous) user before the UI ever
-  // renders, so gameplay never has to wait on or gate behind auth.
-  final user = await container.read(authControllerProvider).ensureSignedIn();
-  await container.read(profileRepositoryProvider).ensureProfile(user.toProfileInput());
+  // Best-effort, non-blocking: sign in (at minimum anonymous) and sync the
+  // profile doc. Must never delay or crash app startup — gameplay is fully
+  // local (drift) and has to work with zero network at first launch. If
+  // this fails (offline, Firebase unreachable, etc.), sign-in is simply
+  // retried the next time something needs it.
+  unawaited(_bestEffortSignIn(container));
 
   runApp(
     UncontrolledProviderScope(
@@ -25,6 +29,15 @@ void main() async {
       child: const NumoSudokuApp(),
     ),
   );
+}
+
+Future<void> _bestEffortSignIn(ProviderContainer container) async {
+  try {
+    final user = await container.read(authControllerProvider).ensureSignedIn();
+    await container.read(profileRepositoryProvider).ensureProfile(user.toProfileInput());
+  } catch (_) {
+    // No network (or Firebase otherwise unavailable) at startup.
+  }
 }
 
 class NumoSudokuApp extends ConsumerWidget {
