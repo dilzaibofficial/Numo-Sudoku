@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "257496182337",
+    "project_id": "numo-sudoku-dev",
+    "storage_bucket": "numo-sudoku-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257496182337:android:5ce69a851b6ce09311e0c0",
+        "android_client_info": {
+          "package_name": "com.numosudoku.numo_sudoku"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI_t-VYjQbBBRD_AfLfSu2y16CDtEXmTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

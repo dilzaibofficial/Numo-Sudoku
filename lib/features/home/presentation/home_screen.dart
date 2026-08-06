@@ -16,6 +16,11 @@ class HomeScreen extends ConsumerWidget {
         title: const Text('Numo Sudoku'),
         actions: [
           IconButton(
+            tooltip: 'Account',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => context.push('/account'),
+          ),
+          IconButton(
             tooltip: 'Toggle theme',
             icon: Icon(
               themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,

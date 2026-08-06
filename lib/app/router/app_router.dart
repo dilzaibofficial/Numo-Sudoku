@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/account_screen.dart';
 import '../../features/gameplay/presentation/gameplay_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/new_game_screen.dart';
@@ -12,6 +13,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/account',
+      builder: (context, state) => const AccountScreen(),
     ),
     GoRoute(
       path: '/new-game',
