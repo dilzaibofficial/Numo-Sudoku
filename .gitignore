@@ -44,3 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Regenerable ETL intermediate output (rerun tools/kaggle_pipeline to
+# rebuild) — only the bundled assets/puzzles/*.sqlite is actually shipped.
+/tools/kaggle_pipeline/output/
