@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'in_progress_game_table.dart';
 import 'puzzle_table.dart';
 
 part 'app_database.g.dart';
@@ -14,7 +15,18 @@ String encodeBoard(Uint8List board) => board.join(',');
 Uint8List decodeBoard(String encoded) =>
     Uint8List.fromList(encoded.split(',').map(int.parse).toList());
 
-@DriftDatabase(tables: [Puzzles])
+String encodeNotes(List<Set<int>> notes) =>
+    notes.map((cellNotes) => cellNotes.join(',')).join(';');
+
+List<Set<int>> decodeNotes(String encoded) {
+  if (encoded.isEmpty) return [];
+  return encoded.split(';').map((cell) {
+    if (cell.isEmpty) return <int>{};
+    return cell.split(',').map(int.parse).toSet();
+  }).toList();
+}
+
+@DriftDatabase(tables: [Puzzles, InProgressGames])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -24,7 +36,27 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.withExecutor(super.connection);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) => m.createAll(),
+        onUpgrade: (m, from, to) async {
+          if (from < 2) await m.createTable(inProgressGames);
+        },
+      );
+
+  Future<void> saveInProgressGame(InProgressGamesCompanion entry) async {
+    await into(inProgressGames).insertOnConflictUpdate(entry);
+  }
+
+  Future<InProgressGame?> loadInProgressGame() {
+    return (select(inProgressGames)..where((g) => g.id.equals(1))).getSingleOrNull();
+  }
+
+  Future<void> clearInProgressGame() async {
+    await (delete(inProgressGames)..where((g) => g.id.equals(1))).go();
+  }
 
   Future<Puzzle?> takeUnusedPuzzle({
     required int gridSize,

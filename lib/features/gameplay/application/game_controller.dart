@@ -8,6 +8,7 @@ import '../../puzzle_bank/data/puzzle_repository.dart';
 import '../../sudoku_engine/domain/difficulty.dart';
 import '../../sudoku_engine/domain/grid_spec.dart';
 import '../../sudoku_engine/generator/sudoku_generator.dart';
+import '../data/game_session_repository.dart';
 import '../domain/game_board_state.dart';
 
 class _GenerateParams {
@@ -34,6 +35,25 @@ class GameController extends Notifier<GameBoardState?> {
     return null;
   }
 
+  GameSessionRepository get _session => ref.read(gameSessionRepositoryProvider);
+
+  void _setState(GameBoardState newState) {
+    state = newState;
+    unawaited(_session.save(newState));
+  }
+
+  /// Resumes the previously saved game if one exists and matches [spec];
+  /// otherwise starts a fresh game for [spec]/[difficulty].
+  Future<void> resumeOrStartNewGame(GridSpec spec, PuzzleDifficulty difficulty) async {
+    final saved = await _session.load();
+    if (saved != null && saved.spec.size == spec.size && !saved.isComplete) {
+      state = saved;
+      _startTicker();
+      return;
+    }
+    await startNewGame(spec, difficulty);
+  }
+
   Future<void> startNewGame(GridSpec spec, PuzzleDifficulty difficulty) async {
     _ticker?.cancel();
 
@@ -57,7 +77,7 @@ class GameController extends Notifier<GameBoardState?> {
       solution = generated.solution;
     }
 
-    state = GameBoardState.fromPuzzle(spec: spec, puzzle: puzzle, solution: solution);
+    _setState(GameBoardState.fromPuzzle(spec: spec, puzzle: puzzle, solution: solution));
     _startTicker();
   }
 
@@ -66,22 +86,20 @@ class GameController extends Notifier<GameBoardState?> {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       final current = state;
       if (current == null || current.isComplete || current.isGameOver) return;
-      state = current.copyWith(
-        elapsed: current.elapsed + const Duration(seconds: 1),
-      );
+      _setState(current.copyWith(elapsed: current.elapsed + const Duration(seconds: 1)));
     });
   }
 
   void selectCell(int row, int col) {
     final current = state;
     if (current == null) return;
-    state = current.copyWith(selectedRow: row, selectedCol: col);
+    _setState(current.copyWith(selectedRow: row, selectedCol: col));
   }
 
   void toggleNotesMode() {
     final current = state;
     if (current == null) return;
-    state = current.copyWith(notesMode: !current.notesMode);
+    _setState(current.copyWith(notesMode: !current.notesMode));
   }
 
   void enterValue(int value) {
@@ -105,7 +123,7 @@ class GameController extends Notifier<GameBoardState?> {
       } else {
         newNotes[index].add(value);
       }
-      state = current.copyWith(notes: newNotes);
+      _setState(current.copyWith(notes: newNotes));
       return;
     }
 
@@ -126,15 +144,18 @@ class GameController extends Notifier<GameBoardState?> {
     final newMistakes = isCorrect ? current.mistakes : current.mistakes + 1;
     final isComplete = _boardMatchesSolution(newValues, current.solution);
 
-    state = current.copyWith(
+    _setState(current.copyWith(
       values: newValues,
       notes: newNotes,
       mistakes: newMistakes,
       isComplete: isComplete,
       undoStack: [...current.undoStack, move],
-    );
+    ));
 
-    if (isComplete) _ticker?.cancel();
+    if (isComplete) {
+      _ticker?.cancel();
+      unawaited(_session.clear());
+    }
   }
 
   void clearSelectedCell() {
@@ -161,11 +182,11 @@ class GameController extends Notifier<GameBoardState?> {
       (i) => i == index ? <int>{} : current.notes[i],
     );
 
-    state = current.copyWith(
+    _setState(current.copyWith(
       values: newValues,
       notes: newNotes,
       undoStack: [...current.undoStack, move],
-    );
+    ));
   }
 
   void undo() {
@@ -180,12 +201,12 @@ class GameController extends Notifier<GameBoardState?> {
       (i) => i == move.cellIndex ? {...move.previousNotes} : current.notes[i],
     );
 
-    state = current.copyWith(
+    _setState(current.copyWith(
       values: newValues,
       notes: newNotes,
       undoStack: current.undoStack.sublist(0, current.undoStack.length - 1),
       isComplete: false,
-    );
+    ));
   }
 
   void useHint() {
@@ -208,13 +229,16 @@ class GameController extends Notifier<GameBoardState?> {
 
     final isComplete = _boardMatchesSolution(newValues, current.solution);
 
-    state = current.copyWith(
+    _setState(current.copyWith(
       values: newValues,
       notes: newNotes,
       isComplete: isComplete,
-    );
+    ));
 
-    if (isComplete) _ticker?.cancel();
+    if (isComplete) {
+      _ticker?.cancel();
+      unawaited(_session.clear());
+    }
   }
 
   bool _boardMatchesSolution(Uint8List values, Uint8List solution) {

@@ -27,7 +27,9 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(gameControllerProvider.notifier).startNewGame(widget.spec, widget.difficulty);
+      ref
+          .read(gameControllerProvider.notifier)
+          .resumeOrStartNewGame(widget.spec, widget.difficulty);
     });
   }
 

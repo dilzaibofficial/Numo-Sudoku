@@ -101,6 +101,9 @@ def main():
     combined = pd.concat([df_a, df_b], ignore_index=True)
     combined["puzzle"] = combined["puzzle"].astype(str).str.strip()
     combined["solution"] = combined["solution"].astype(str).str.strip()
+    # radcliffe's puzzle strings use '.' for blanks instead of '0'; normalize
+    # both datasets to '0' (a no-op for rohanrao, which already uses '0').
+    combined["puzzle"] = combined["puzzle"].str.replace(".", "0", regex=False)
     print(f"Combined: {len(combined)} rows")
 
     combined = combined.drop_duplicates(subset=["puzzle"])

@@ -547,15 +547,723 @@ class PuzzlesCompanion extends UpdateCompanion<Puzzle> {
   }
 }
 
+class $InProgressGamesTable extends InProgressGames
+    with TableInfo<$InProgressGamesTable, InProgressGame> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InProgressGamesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _gridSizeMeta = const VerificationMeta(
+    'gridSize',
+  );
+  @override
+  late final GeneratedColumn<int> gridSize = GeneratedColumn<int>(
+    'grid_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _givensMeta = const VerificationMeta('givens');
+  @override
+  late final GeneratedColumn<String> givens = GeneratedColumn<String>(
+    'givens',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valuesMeta = const VerificationMeta('values');
+  @override
+  late final GeneratedColumn<String> values = GeneratedColumn<String>(
+    'values',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _solutionMeta = const VerificationMeta(
+    'solution',
+  );
+  @override
+  late final GeneratedColumn<String> solution = GeneratedColumn<String>(
+    'solution',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _selectedRowMeta = const VerificationMeta(
+    'selectedRow',
+  );
+  @override
+  late final GeneratedColumn<int> selectedRow = GeneratedColumn<int>(
+    'selected_row',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _selectedColMeta = const VerificationMeta(
+    'selectedCol',
+  );
+  @override
+  late final GeneratedColumn<int> selectedCol = GeneratedColumn<int>(
+    'selected_col',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesModeMeta = const VerificationMeta(
+    'notesMode',
+  );
+  @override
+  late final GeneratedColumn<bool> notesMode = GeneratedColumn<bool>(
+    'notes_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("notes_mode" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _mistakesMeta = const VerificationMeta(
+    'mistakes',
+  );
+  @override
+  late final GeneratedColumn<int> mistakes = GeneratedColumn<int>(
+    'mistakes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _elapsedSecondsMeta = const VerificationMeta(
+    'elapsedSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> elapsedSeconds = GeneratedColumn<int>(
+    'elapsed_seconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isCompleteMeta = const VerificationMeta(
+    'isComplete',
+  );
+  @override
+  late final GeneratedColumn<bool> isComplete = GeneratedColumn<bool>(
+    'is_complete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_complete" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    gridSize,
+    givens,
+    values,
+    solution,
+    notes,
+    selectedRow,
+    selectedCol,
+    notesMode,
+    mistakes,
+    elapsedSeconds,
+    isComplete,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'in_progress_games';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InProgressGame> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('grid_size')) {
+      context.handle(
+        _gridSizeMeta,
+        gridSize.isAcceptableOrUnknown(data['grid_size']!, _gridSizeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gridSizeMeta);
+    }
+    if (data.containsKey('givens')) {
+      context.handle(
+        _givensMeta,
+        givens.isAcceptableOrUnknown(data['givens']!, _givensMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_givensMeta);
+    }
+    if (data.containsKey('values')) {
+      context.handle(
+        _valuesMeta,
+        values.isAcceptableOrUnknown(data['values']!, _valuesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valuesMeta);
+    }
+    if (data.containsKey('solution')) {
+      context.handle(
+        _solutionMeta,
+        solution.isAcceptableOrUnknown(data['solution']!, _solutionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_solutionMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_notesMeta);
+    }
+    if (data.containsKey('selected_row')) {
+      context.handle(
+        _selectedRowMeta,
+        selectedRow.isAcceptableOrUnknown(
+          data['selected_row']!,
+          _selectedRowMeta,
+        ),
+      );
+    }
+    if (data.containsKey('selected_col')) {
+      context.handle(
+        _selectedColMeta,
+        selectedCol.isAcceptableOrUnknown(
+          data['selected_col']!,
+          _selectedColMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes_mode')) {
+      context.handle(
+        _notesModeMeta,
+        notesMode.isAcceptableOrUnknown(data['notes_mode']!, _notesModeMeta),
+      );
+    }
+    if (data.containsKey('mistakes')) {
+      context.handle(
+        _mistakesMeta,
+        mistakes.isAcceptableOrUnknown(data['mistakes']!, _mistakesMeta),
+      );
+    }
+    if (data.containsKey('elapsed_seconds')) {
+      context.handle(
+        _elapsedSecondsMeta,
+        elapsedSeconds.isAcceptableOrUnknown(
+          data['elapsed_seconds']!,
+          _elapsedSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_complete')) {
+      context.handle(
+        _isCompleteMeta,
+        isComplete.isAcceptableOrUnknown(data['is_complete']!, _isCompleteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InProgressGame map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InProgressGame(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      gridSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}grid_size'],
+      )!,
+      givens: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}givens'],
+      )!,
+      values: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}values'],
+      )!,
+      solution: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}solution'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+      selectedRow: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}selected_row'],
+      ),
+      selectedCol: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}selected_col'],
+      ),
+      notesMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}notes_mode'],
+      )!,
+      mistakes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mistakes'],
+      )!,
+      elapsedSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}elapsed_seconds'],
+      )!,
+      isComplete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_complete'],
+      )!,
+    );
+  }
+
+  @override
+  $InProgressGamesTable createAlias(String alias) {
+    return $InProgressGamesTable(attachedDatabase, alias);
+  }
+}
+
+class InProgressGame extends DataClass implements Insertable<InProgressGame> {
+  final int id;
+  final int gridSize;
+  final String givens;
+  final String values;
+  final String solution;
+  final String notes;
+  final int? selectedRow;
+  final int? selectedCol;
+  final bool notesMode;
+  final int mistakes;
+  final int elapsedSeconds;
+  final bool isComplete;
+  const InProgressGame({
+    required this.id,
+    required this.gridSize,
+    required this.givens,
+    required this.values,
+    required this.solution,
+    required this.notes,
+    this.selectedRow,
+    this.selectedCol,
+    required this.notesMode,
+    required this.mistakes,
+    required this.elapsedSeconds,
+    required this.isComplete,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['grid_size'] = Variable<int>(gridSize);
+    map['givens'] = Variable<String>(givens);
+    map['values'] = Variable<String>(values);
+    map['solution'] = Variable<String>(solution);
+    map['notes'] = Variable<String>(notes);
+    if (!nullToAbsent || selectedRow != null) {
+      map['selected_row'] = Variable<int>(selectedRow);
+    }
+    if (!nullToAbsent || selectedCol != null) {
+      map['selected_col'] = Variable<int>(selectedCol);
+    }
+    map['notes_mode'] = Variable<bool>(notesMode);
+    map['mistakes'] = Variable<int>(mistakes);
+    map['elapsed_seconds'] = Variable<int>(elapsedSeconds);
+    map['is_complete'] = Variable<bool>(isComplete);
+    return map;
+  }
+
+  InProgressGamesCompanion toCompanion(bool nullToAbsent) {
+    return InProgressGamesCompanion(
+      id: Value(id),
+      gridSize: Value(gridSize),
+      givens: Value(givens),
+      values: Value(values),
+      solution: Value(solution),
+      notes: Value(notes),
+      selectedRow: selectedRow == null && nullToAbsent
+          ? const Value.absent()
+          : Value(selectedRow),
+      selectedCol: selectedCol == null && nullToAbsent
+          ? const Value.absent()
+          : Value(selectedCol),
+      notesMode: Value(notesMode),
+      mistakes: Value(mistakes),
+      elapsedSeconds: Value(elapsedSeconds),
+      isComplete: Value(isComplete),
+    );
+  }
+
+  factory InProgressGame.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InProgressGame(
+      id: serializer.fromJson<int>(json['id']),
+      gridSize: serializer.fromJson<int>(json['gridSize']),
+      givens: serializer.fromJson<String>(json['givens']),
+      values: serializer.fromJson<String>(json['values']),
+      solution: serializer.fromJson<String>(json['solution']),
+      notes: serializer.fromJson<String>(json['notes']),
+      selectedRow: serializer.fromJson<int?>(json['selectedRow']),
+      selectedCol: serializer.fromJson<int?>(json['selectedCol']),
+      notesMode: serializer.fromJson<bool>(json['notesMode']),
+      mistakes: serializer.fromJson<int>(json['mistakes']),
+      elapsedSeconds: serializer.fromJson<int>(json['elapsedSeconds']),
+      isComplete: serializer.fromJson<bool>(json['isComplete']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'gridSize': serializer.toJson<int>(gridSize),
+      'givens': serializer.toJson<String>(givens),
+      'values': serializer.toJson<String>(values),
+      'solution': serializer.toJson<String>(solution),
+      'notes': serializer.toJson<String>(notes),
+      'selectedRow': serializer.toJson<int?>(selectedRow),
+      'selectedCol': serializer.toJson<int?>(selectedCol),
+      'notesMode': serializer.toJson<bool>(notesMode),
+      'mistakes': serializer.toJson<int>(mistakes),
+      'elapsedSeconds': serializer.toJson<int>(elapsedSeconds),
+      'isComplete': serializer.toJson<bool>(isComplete),
+    };
+  }
+
+  InProgressGame copyWith({
+    int? id,
+    int? gridSize,
+    String? givens,
+    String? values,
+    String? solution,
+    String? notes,
+    Value<int?> selectedRow = const Value.absent(),
+    Value<int?> selectedCol = const Value.absent(),
+    bool? notesMode,
+    int? mistakes,
+    int? elapsedSeconds,
+    bool? isComplete,
+  }) => InProgressGame(
+    id: id ?? this.id,
+    gridSize: gridSize ?? this.gridSize,
+    givens: givens ?? this.givens,
+    values: values ?? this.values,
+    solution: solution ?? this.solution,
+    notes: notes ?? this.notes,
+    selectedRow: selectedRow.present ? selectedRow.value : this.selectedRow,
+    selectedCol: selectedCol.present ? selectedCol.value : this.selectedCol,
+    notesMode: notesMode ?? this.notesMode,
+    mistakes: mistakes ?? this.mistakes,
+    elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+    isComplete: isComplete ?? this.isComplete,
+  );
+  InProgressGame copyWithCompanion(InProgressGamesCompanion data) {
+    return InProgressGame(
+      id: data.id.present ? data.id.value : this.id,
+      gridSize: data.gridSize.present ? data.gridSize.value : this.gridSize,
+      givens: data.givens.present ? data.givens.value : this.givens,
+      values: data.values.present ? data.values.value : this.values,
+      solution: data.solution.present ? data.solution.value : this.solution,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      selectedRow: data.selectedRow.present
+          ? data.selectedRow.value
+          : this.selectedRow,
+      selectedCol: data.selectedCol.present
+          ? data.selectedCol.value
+          : this.selectedCol,
+      notesMode: data.notesMode.present ? data.notesMode.value : this.notesMode,
+      mistakes: data.mistakes.present ? data.mistakes.value : this.mistakes,
+      elapsedSeconds: data.elapsedSeconds.present
+          ? data.elapsedSeconds.value
+          : this.elapsedSeconds,
+      isComplete: data.isComplete.present
+          ? data.isComplete.value
+          : this.isComplete,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InProgressGame(')
+          ..write('id: $id, ')
+          ..write('gridSize: $gridSize, ')
+          ..write('givens: $givens, ')
+          ..write('values: $values, ')
+          ..write('solution: $solution, ')
+          ..write('notes: $notes, ')
+          ..write('selectedRow: $selectedRow, ')
+          ..write('selectedCol: $selectedCol, ')
+          ..write('notesMode: $notesMode, ')
+          ..write('mistakes: $mistakes, ')
+          ..write('elapsedSeconds: $elapsedSeconds, ')
+          ..write('isComplete: $isComplete')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    gridSize,
+    givens,
+    values,
+    solution,
+    notes,
+    selectedRow,
+    selectedCol,
+    notesMode,
+    mistakes,
+    elapsedSeconds,
+    isComplete,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InProgressGame &&
+          other.id == this.id &&
+          other.gridSize == this.gridSize &&
+          other.givens == this.givens &&
+          other.values == this.values &&
+          other.solution == this.solution &&
+          other.notes == this.notes &&
+          other.selectedRow == this.selectedRow &&
+          other.selectedCol == this.selectedCol &&
+          other.notesMode == this.notesMode &&
+          other.mistakes == this.mistakes &&
+          other.elapsedSeconds == this.elapsedSeconds &&
+          other.isComplete == this.isComplete);
+}
+
+class InProgressGamesCompanion extends UpdateCompanion<InProgressGame> {
+  final Value<int> id;
+  final Value<int> gridSize;
+  final Value<String> givens;
+  final Value<String> values;
+  final Value<String> solution;
+  final Value<String> notes;
+  final Value<int?> selectedRow;
+  final Value<int?> selectedCol;
+  final Value<bool> notesMode;
+  final Value<int> mistakes;
+  final Value<int> elapsedSeconds;
+  final Value<bool> isComplete;
+  const InProgressGamesCompanion({
+    this.id = const Value.absent(),
+    this.gridSize = const Value.absent(),
+    this.givens = const Value.absent(),
+    this.values = const Value.absent(),
+    this.solution = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.selectedRow = const Value.absent(),
+    this.selectedCol = const Value.absent(),
+    this.notesMode = const Value.absent(),
+    this.mistakes = const Value.absent(),
+    this.elapsedSeconds = const Value.absent(),
+    this.isComplete = const Value.absent(),
+  });
+  InProgressGamesCompanion.insert({
+    this.id = const Value.absent(),
+    required int gridSize,
+    required String givens,
+    required String values,
+    required String solution,
+    required String notes,
+    this.selectedRow = const Value.absent(),
+    this.selectedCol = const Value.absent(),
+    this.notesMode = const Value.absent(),
+    this.mistakes = const Value.absent(),
+    this.elapsedSeconds = const Value.absent(),
+    this.isComplete = const Value.absent(),
+  }) : gridSize = Value(gridSize),
+       givens = Value(givens),
+       values = Value(values),
+       solution = Value(solution),
+       notes = Value(notes);
+  static Insertable<InProgressGame> custom({
+    Expression<int>? id,
+    Expression<int>? gridSize,
+    Expression<String>? givens,
+    Expression<String>? values,
+    Expression<String>? solution,
+    Expression<String>? notes,
+    Expression<int>? selectedRow,
+    Expression<int>? selectedCol,
+    Expression<bool>? notesMode,
+    Expression<int>? mistakes,
+    Expression<int>? elapsedSeconds,
+    Expression<bool>? isComplete,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (gridSize != null) 'grid_size': gridSize,
+      if (givens != null) 'givens': givens,
+      if (values != null) 'values': values,
+      if (solution != null) 'solution': solution,
+      if (notes != null) 'notes': notes,
+      if (selectedRow != null) 'selected_row': selectedRow,
+      if (selectedCol != null) 'selected_col': selectedCol,
+      if (notesMode != null) 'notes_mode': notesMode,
+      if (mistakes != null) 'mistakes': mistakes,
+      if (elapsedSeconds != null) 'elapsed_seconds': elapsedSeconds,
+      if (isComplete != null) 'is_complete': isComplete,
+    });
+  }
+
+  InProgressGamesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? gridSize,
+    Value<String>? givens,
+    Value<String>? values,
+    Value<String>? solution,
+    Value<String>? notes,
+    Value<int?>? selectedRow,
+    Value<int?>? selectedCol,
+    Value<bool>? notesMode,
+    Value<int>? mistakes,
+    Value<int>? elapsedSeconds,
+    Value<bool>? isComplete,
+  }) {
+    return InProgressGamesCompanion(
+      id: id ?? this.id,
+      gridSize: gridSize ?? this.gridSize,
+      givens: givens ?? this.givens,
+      values: values ?? this.values,
+      solution: solution ?? this.solution,
+      notes: notes ?? this.notes,
+      selectedRow: selectedRow ?? this.selectedRow,
+      selectedCol: selectedCol ?? this.selectedCol,
+      notesMode: notesMode ?? this.notesMode,
+      mistakes: mistakes ?? this.mistakes,
+      elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+      isComplete: isComplete ?? this.isComplete,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (gridSize.present) {
+      map['grid_size'] = Variable<int>(gridSize.value);
+    }
+    if (givens.present) {
+      map['givens'] = Variable<String>(givens.value);
+    }
+    if (values.present) {
+      map['values'] = Variable<String>(values.value);
+    }
+    if (solution.present) {
+      map['solution'] = Variable<String>(solution.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (selectedRow.present) {
+      map['selected_row'] = Variable<int>(selectedRow.value);
+    }
+    if (selectedCol.present) {
+      map['selected_col'] = Variable<int>(selectedCol.value);
+    }
+    if (notesMode.present) {
+      map['notes_mode'] = Variable<bool>(notesMode.value);
+    }
+    if (mistakes.present) {
+      map['mistakes'] = Variable<int>(mistakes.value);
+    }
+    if (elapsedSeconds.present) {
+      map['elapsed_seconds'] = Variable<int>(elapsedSeconds.value);
+    }
+    if (isComplete.present) {
+      map['is_complete'] = Variable<bool>(isComplete.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InProgressGamesCompanion(')
+          ..write('id: $id, ')
+          ..write('gridSize: $gridSize, ')
+          ..write('givens: $givens, ')
+          ..write('values: $values, ')
+          ..write('solution: $solution, ')
+          ..write('notes: $notes, ')
+          ..write('selectedRow: $selectedRow, ')
+          ..write('selectedCol: $selectedCol, ')
+          ..write('notesMode: $notesMode, ')
+          ..write('mistakes: $mistakes, ')
+          ..write('elapsedSeconds: $elapsedSeconds, ')
+          ..write('isComplete: $isComplete')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $PuzzlesTable puzzles = $PuzzlesTable(this);
+  late final $InProgressGamesTable inProgressGames = $InProgressGamesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [puzzles];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    puzzles,
+    inProgressGames,
+  ];
 }
 
 typedef $$PuzzlesTableCreateCompanionBuilder =
@@ -824,10 +1532,353 @@ typedef $$PuzzlesTableProcessedTableManager =
       Puzzle,
       PrefetchHooks Function()
     >;
+typedef $$InProgressGamesTableCreateCompanionBuilder =
+    InProgressGamesCompanion Function({
+      Value<int> id,
+      required int gridSize,
+      required String givens,
+      required String values,
+      required String solution,
+      required String notes,
+      Value<int?> selectedRow,
+      Value<int?> selectedCol,
+      Value<bool> notesMode,
+      Value<int> mistakes,
+      Value<int> elapsedSeconds,
+      Value<bool> isComplete,
+    });
+typedef $$InProgressGamesTableUpdateCompanionBuilder =
+    InProgressGamesCompanion Function({
+      Value<int> id,
+      Value<int> gridSize,
+      Value<String> givens,
+      Value<String> values,
+      Value<String> solution,
+      Value<String> notes,
+      Value<int?> selectedRow,
+      Value<int?> selectedCol,
+      Value<bool> notesMode,
+      Value<int> mistakes,
+      Value<int> elapsedSeconds,
+      Value<bool> isComplete,
+    });
+
+class $$InProgressGamesTableFilterComposer
+    extends Composer<_$AppDatabase, $InProgressGamesTable> {
+  $$InProgressGamesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get gridSize => $composableBuilder(
+    column: $table.gridSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get givens => $composableBuilder(
+    column: $table.givens,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get values => $composableBuilder(
+    column: $table.values,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get solution => $composableBuilder(
+    column: $table.solution,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get selectedRow => $composableBuilder(
+    column: $table.selectedRow,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get selectedCol => $composableBuilder(
+    column: $table.selectedCol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get notesMode => $composableBuilder(
+    column: $table.notesMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mistakes => $composableBuilder(
+    column: $table.mistakes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get elapsedSeconds => $composableBuilder(
+    column: $table.elapsedSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isComplete => $composableBuilder(
+    column: $table.isComplete,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InProgressGamesTableOrderingComposer
+    extends Composer<_$AppDatabase, $InProgressGamesTable> {
+  $$InProgressGamesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get gridSize => $composableBuilder(
+    column: $table.gridSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get givens => $composableBuilder(
+    column: $table.givens,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get values => $composableBuilder(
+    column: $table.values,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get solution => $composableBuilder(
+    column: $table.solution,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get selectedRow => $composableBuilder(
+    column: $table.selectedRow,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get selectedCol => $composableBuilder(
+    column: $table.selectedCol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get notesMode => $composableBuilder(
+    column: $table.notesMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mistakes => $composableBuilder(
+    column: $table.mistakes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get elapsedSeconds => $composableBuilder(
+    column: $table.elapsedSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isComplete => $composableBuilder(
+    column: $table.isComplete,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InProgressGamesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InProgressGamesTable> {
+  $$InProgressGamesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get gridSize =>
+      $composableBuilder(column: $table.gridSize, builder: (column) => column);
+
+  GeneratedColumn<String> get givens =>
+      $composableBuilder(column: $table.givens, builder: (column) => column);
+
+  GeneratedColumn<String> get values =>
+      $composableBuilder(column: $table.values, builder: (column) => column);
+
+  GeneratedColumn<String> get solution =>
+      $composableBuilder(column: $table.solution, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<int> get selectedRow => $composableBuilder(
+    column: $table.selectedRow,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get selectedCol => $composableBuilder(
+    column: $table.selectedCol,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get notesMode =>
+      $composableBuilder(column: $table.notesMode, builder: (column) => column);
+
+  GeneratedColumn<int> get mistakes =>
+      $composableBuilder(column: $table.mistakes, builder: (column) => column);
+
+  GeneratedColumn<int> get elapsedSeconds => $composableBuilder(
+    column: $table.elapsedSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isComplete => $composableBuilder(
+    column: $table.isComplete,
+    builder: (column) => column,
+  );
+}
+
+class $$InProgressGamesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InProgressGamesTable,
+          InProgressGame,
+          $$InProgressGamesTableFilterComposer,
+          $$InProgressGamesTableOrderingComposer,
+          $$InProgressGamesTableAnnotationComposer,
+          $$InProgressGamesTableCreateCompanionBuilder,
+          $$InProgressGamesTableUpdateCompanionBuilder,
+          (
+            InProgressGame,
+            BaseReferences<
+              _$AppDatabase,
+              $InProgressGamesTable,
+              InProgressGame
+            >,
+          ),
+          InProgressGame,
+          PrefetchHooks Function()
+        > {
+  $$InProgressGamesTableTableManager(
+    _$AppDatabase db,
+    $InProgressGamesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InProgressGamesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InProgressGamesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InProgressGamesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> gridSize = const Value.absent(),
+                Value<String> givens = const Value.absent(),
+                Value<String> values = const Value.absent(),
+                Value<String> solution = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<int?> selectedRow = const Value.absent(),
+                Value<int?> selectedCol = const Value.absent(),
+                Value<bool> notesMode = const Value.absent(),
+                Value<int> mistakes = const Value.absent(),
+                Value<int> elapsedSeconds = const Value.absent(),
+                Value<bool> isComplete = const Value.absent(),
+              }) => InProgressGamesCompanion(
+                id: id,
+                gridSize: gridSize,
+                givens: givens,
+                values: values,
+                solution: solution,
+                notes: notes,
+                selectedRow: selectedRow,
+                selectedCol: selectedCol,
+                notesMode: notesMode,
+                mistakes: mistakes,
+                elapsedSeconds: elapsedSeconds,
+                isComplete: isComplete,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int gridSize,
+                required String givens,
+                required String values,
+                required String solution,
+                required String notes,
+                Value<int?> selectedRow = const Value.absent(),
+                Value<int?> selectedCol = const Value.absent(),
+                Value<bool> notesMode = const Value.absent(),
+                Value<int> mistakes = const Value.absent(),
+                Value<int> elapsedSeconds = const Value.absent(),
+                Value<bool> isComplete = const Value.absent(),
+              }) => InProgressGamesCompanion.insert(
+                id: id,
+                gridSize: gridSize,
+                givens: givens,
+                values: values,
+                solution: solution,
+                notes: notes,
+                selectedRow: selectedRow,
+                selectedCol: selectedCol,
+                notesMode: notesMode,
+                mistakes: mistakes,
+                elapsedSeconds: elapsedSeconds,
+                isComplete: isComplete,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InProgressGamesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InProgressGamesTable,
+      InProgressGame,
+      $$InProgressGamesTableFilterComposer,
+      $$InProgressGamesTableOrderingComposer,
+      $$InProgressGamesTableAnnotationComposer,
+      $$InProgressGamesTableCreateCompanionBuilder,
+      $$InProgressGamesTableUpdateCompanionBuilder,
+      (
+        InProgressGame,
+        BaseReferences<_$AppDatabase, $InProgressGamesTable, InProgressGame>,
+      ),
+      InProgressGame,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$PuzzlesTableTableManager get puzzles =>
       $$PuzzlesTableTableManager(_db, _db.puzzles);
+  $$InProgressGamesTableTableManager get inProgressGames =>
+      $$InProgressGamesTableTableManager(_db, _db.inProgressGames);
 }
